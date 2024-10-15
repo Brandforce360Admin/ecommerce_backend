@@ -2,8 +2,8 @@ import enum
 import uuid
 
 from sqlalchemy import Column, String, Enum, UUID, TIMESTAMP
+from app.db.base import Base
 
-from db import Base
 
 
 class UserRole(enum.Enum):

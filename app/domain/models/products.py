@@ -1,7 +1,7 @@
 import uuid
 
 from sqlalchemy import Column, UUID, String, TIMESTAMP, ForeignKey, Integer
-from db import Base
+from app.db.base import Base
 
 
 class Product(Base):

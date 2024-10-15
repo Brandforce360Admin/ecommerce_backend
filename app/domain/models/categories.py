@@ -1,7 +1,8 @@
 import uuid
 
 from sqlalchemy import Column, UUID, String, TIMESTAMP, ForeignKey
-from db import Base
+from app.db.base import Base
+
 
 
 class Category(Base):

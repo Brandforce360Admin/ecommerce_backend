@@ -1,7 +1,9 @@
 import uuid
 
 from sqlalchemy import Column, String, Boolean, ForeignKey, UUID, TIMESTAMP
-from db import Base
+
+from app.db.base import Base
+
 
 class Address(Base):
     __tablename__ = "addresses"

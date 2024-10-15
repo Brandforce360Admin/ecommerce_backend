@@ -1,9 +1,10 @@
 fastapi
 uvicorn
 pydantic
+pydantic[email]
 pydantic-settings
 SQLAlchemy
 passlib
 python-dotenv
 alembic
-pymysql
+psycopg2

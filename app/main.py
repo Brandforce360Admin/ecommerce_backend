@@ -2,8 +2,10 @@ from fastapi import FastAPI
 
 from app.api.v1.endpoints import user
 from app.core.config import settings
+from app.db.base import Base, engine
 
 app = FastAPI()
+Base.metadata.create_all(bind=engine)
 
 app.include_router(user.router, prefix=f"{settings.BASE_URL}/v1/users", tags=["Users"])
 
