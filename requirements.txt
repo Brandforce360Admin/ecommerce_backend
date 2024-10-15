@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+pydantic-settings
+SQLAlchemy
+passlib
+python-dotenv
+alembic
+pymysql
