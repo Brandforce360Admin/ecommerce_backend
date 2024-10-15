@@ -12,6 +12,7 @@ class Address(Base):
     user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
     address_line1 = Column(String(255), nullable=False)
     address_line2 = Column(String(255), nullable=True)
+    address_line3 = Column(String(255), nullable=True)
     city = Column(String(100), nullable=False)
     state = Column(String(100), nullable=False)
     postal_code = Column(String(20), nullable=False)

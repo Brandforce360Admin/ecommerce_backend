@@ -7,6 +7,7 @@ from pydantic import BaseModel
 class AddressBase(BaseModel):
     address_line1: str
     address_line2: Optional[str]
+    address_line3: Optional[str]
     city: str
     state: str
     postal_code: str
