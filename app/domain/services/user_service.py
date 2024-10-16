@@ -15,11 +15,12 @@ class UserService:
         self.user_repository = user_repository
 
     def check_if_user_already_exists(self, user: User):
-        user = self.user_repository.get_by_email(user.email)
+        user = self.user_repository.get_by_email(user)
         if user is not None:
             raise UserAlreadyExistsException(f"User with {user.email} already exists.")
 
     def create_new_user(self, user: User, password: Password) -> User:
         user.password_hash = pwd_context.hash(password.password)
         user.created_at = datetime.datetime.now(datetime.UTC)
-        return self.user_repository.create_user(user)
+        new_user = self.user_repository.create_user(user)
+        return new_user

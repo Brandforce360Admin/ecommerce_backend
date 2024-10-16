@@ -36,13 +36,12 @@ class UserCreate(UserBase):
 
 
 class UserResponse(UserBase):
-    id: UUID
+    user_id: UUID
     created_at: datetime
 
-    def __init__(self, id: UUID, name: str, email: str, created_at: datetime):
+    def __init__(self, user_id: UUID, name: str, email: str, created_at: datetime):
         super().__init__(name=name, email=email)
-        # Initialize the additional field in UserResponse
-        self.id = id
+        self.user_id = user_id
         self.created_at = created_at
 
     class Config:

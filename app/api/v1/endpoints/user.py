@@ -13,8 +13,8 @@ router = APIRouter()
 @router.post("/register", response_model=UserResponse)
 def register_user(user: UserCreate, user_application: UserApplication = Depends(get_user_application)):
     try:
-        new_user = user_application.register_user(User(name=user.name, email=user.email), Password(user.password))
-        return UserResponse(id=new_user.user_id, name=new_user.name, email=new_user.email,
-                            created_at=new_user.created_at)
+        new_user_api = user_application.register_user(User(name=user.name, email=user.email), Password(user.password))
+        return UserResponse(user_id=new_user_api.user_id, name=new_user_api.name, email=new_user_api.email,
+                            created_at=new_user_api.created_at)
     except UserAlreadyExistsException as e:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
