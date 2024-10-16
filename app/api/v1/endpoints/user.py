@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.application.user_application import UserApplication
 from app.dependencies import get_user_application
@@ -17,4 +17,4 @@ def register_user(user: UserCreate, user_application: UserApplication = Depends(
         return UserResponse(id=new_user.user_id, name=new_user.name, email=new_user.email,
                             created_at=new_user.created_at)
     except UserAlreadyExistsException as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
