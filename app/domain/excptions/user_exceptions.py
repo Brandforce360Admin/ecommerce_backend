@@ -1,8 +1,8 @@
 class UserAlreadyExistsException(Exception):
-    def __init__(self, message):
-        super().__init__(message)
+    def __init__(self, message: str):
+        self.message = message
 
 
 class InvalidPasswordException(Exception):
-    def __init__(self, message):
-        super().__init__(message)
+    def __init__(self, message: str):
+        self.message = message
