@@ -2,8 +2,8 @@ import enum
 import uuid
 
 from sqlalchemy import Column, String, Enum, UUID, TIMESTAMP
-from app.db.base import Base
 
+from app.db.base import Base
 
 
 class UserRole(enum.Enum):
@@ -17,7 +17,11 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(100), nullable=False)
     email = Column(String(100), unique=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
+    password_hash = Column(String(255), nullable=True)
     role = Column(Enum(UserRole), default=UserRole.customer)
     created_at = Column(TIMESTAMP, nullable=False)
     updated_at = Column(TIMESTAMP, nullable=True)
+
+    def __init__(self, name: str, email: str):
+        self.name = name
+        self.email = email
