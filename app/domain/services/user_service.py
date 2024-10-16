@@ -1,13 +1,25 @@
-from sqlalchemy.orm import Session
+import datetime
+
+from passlib.context import CryptContext
+
+from app.domain.excptions.user_exceptions import UserAlreadyExistsException
+from app.domain.models.users import User
 from app.domain.repositories.user_repository import UserRepository
-from app.schemas.user import UserCreate
-from app.core.security import get_password_hash
+from app.domain.value_objects.password import Password
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def create_new_user(db: Session, user_in: UserCreate):
-    user = UserRepository.get_by_email(db, email=user_in.email)
-    if user:
-        raise ValueError("User already registered")
+class UserService:
+    def __init__(self, user_repository: UserRepository):
+        self.user_repository = user_repository
 
-    hashed_password = get_password_hash(user_in.password)
-    return UserRepository.create_user(db, user=user_in, hashed_password=hashed_password)
+    def check_if_user_already_exists(self, user: User):
+        user = self.user_repository.get_by_email(user.email)
+        if user is not None:
+            raise UserAlreadyExistsException(f"User with {user.email} already exists.")
+
+    def create_new_user(self, user: User, password: Password) -> User:
+        user.password_hash = pwd_context.hash(password.password)
+        user.created_at = datetime.datetime.now(datetime.UTC)
+        return self.user_repository.create_user(user)
