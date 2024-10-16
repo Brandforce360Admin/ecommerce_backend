@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.db.base import get_db
 from app.domain.excptions.user_exceptions import UserAlreadyExistsException
 from app.schemas.user import UserCreate, UserResponse
-from app.services.user_service import create_new_user
+from app.domain.services import create_new_user
 
 router = APIRouter()
 
