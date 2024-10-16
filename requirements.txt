@@ -8,3 +8,4 @@ passlib
 python-dotenv
 alembic
 psycopg2
+starlette
