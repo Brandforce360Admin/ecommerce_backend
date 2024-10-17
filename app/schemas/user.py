@@ -39,10 +39,5 @@ class UserResponse(UserBase):
     user_id: UUID
     created_at: datetime
 
-    def __init__(self, user_id: UUID, name: str, email: str, created_at: datetime):
-        super().__init__(name=name, email=email)
-        self.user_id = user_id
-        self.created_at = created_at
-
     class Config:
         from_attributes = True

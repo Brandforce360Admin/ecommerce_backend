@@ -18,7 +18,7 @@ class User(Base):
     _name = Column(String(100), nullable=False)
     _email = Column(String(100), unique=True, nullable=False)
     _password_hash = Column(String(255), nullable=True)
-    role = Column(Enum(UserRole), default=UserRole.customer)
+    _role = Column(Enum(UserRole), default=UserRole.customer)
     _created_at = Column(TIMESTAMP, nullable=False)
     _updated_at = Column(TIMESTAMP, nullable=True)
 
