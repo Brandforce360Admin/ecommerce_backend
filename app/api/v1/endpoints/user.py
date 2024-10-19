@@ -5,7 +5,7 @@ from app.dependencies import get_user_application
 from app.domain.excptions.user_exceptions import UserAlreadyExistsException
 from app.domain.models.users import User
 from app.domain.value_objects.password import Password
-from app.schemas.user import UserCreate, UserResponse
+from app.api.v1.schemas.users.register_user import UserCreate, UserResponse
 from app.logger import logger
 
 router = APIRouter()
