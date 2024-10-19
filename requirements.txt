@@ -9,4 +9,4 @@ python-dotenv
 alembic
 psycopg2
 starlette
-bcrypt
+argon2-cffi

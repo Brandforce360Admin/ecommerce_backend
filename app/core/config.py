@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     ALGORITHM: str = os.getenv("ALGORITHM")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
     BASE_URL: str = os.getenv("BASE_URL")
+    LOG_LEVEL: str = os.getenv("LOG_LEVEL")
 
     class Config:
         env_file = ".env"
