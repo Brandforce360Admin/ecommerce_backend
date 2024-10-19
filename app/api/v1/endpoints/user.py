@@ -46,5 +46,5 @@ def login_user(login_user_request: LoginUserRequest, user_application: UserAppli
         logger.error(f"ERROR: User with email: {login_user.email} does not exists.")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except InvalidPasswordException as e:
-        logger.error(f"ERROR: User and email combination does not match for user with email: {login_user.email}")
+        logger.error(f"ERROR: User and email combination does not match for user with email: {login_user_request.email}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

@@ -36,10 +36,9 @@ class UserService:
         return new_user
 
     @staticmethod
-    def verify_password(user: User, password: Password):
-        user.password_hash = PasswordHasher().hash(password.password)
+    def verify_password(user: User, plain_password: Password):
         try:
-            PasswordHasher().verify(user.password_hash, password.password)
+            PasswordHasher().verify(user.password_hash, plain_password.password)
         except VerifyMismatchError as e:
             logger.info("INFO: Password hash do not match")
             raise InvalidPasswordException("INFO: Password hash do not match")
