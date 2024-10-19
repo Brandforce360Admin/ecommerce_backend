@@ -29,7 +29,7 @@ class TokenService:
         )
         payload = {
             'user_id': user.user_id,
-            'role': user.role,
+            'role': user.role.value,
             'exp': expiration,
             'iat': iat_time
         }
