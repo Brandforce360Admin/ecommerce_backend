@@ -9,11 +9,12 @@ load_dotenv()
 
 class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URL: str = os.getenv("SQLALCHEMY_DATABASE_URL")
-    SECRET_KEY: str = os.getenv("SECRET_KEY")
     ALGORITHM: str = os.getenv("ALGORITHM")
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES"))
+    ACCESS_TOKEN_EXPIRY: int = int(os.getenv("ACCESS_TOKEN_EXPIRY"))
+    REFRESH_TOKEN_EXPIRY: int = int(os.getenv("ACCESS_TOKEN_EXPIRY"))
     BASE_URL: str = os.getenv("BASE_URL")
     LOG_LEVEL: str = os.getenv("LOG_LEVEL")
+    JWT_SECRET: str = os.getenv("JWT_SECRET")
 
     class Config:
         env_file = ".env"

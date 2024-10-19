@@ -10,3 +10,4 @@ alembic
 psycopg2
 starlette
 argon2-cffi
+PyJWT

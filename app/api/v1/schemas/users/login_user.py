@@ -1,5 +1,4 @@
 import re
-from datetime import datetime
 from uuid import UUID
 
 from fastapi import HTTPException
@@ -8,18 +7,17 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 from app.logger import logger
 
 
-class RegisterUserBase(BaseModel):
-    name: str = Field(..., min_length=3, max_length=50, description="The user's full name.")
+class LoginUserBase(BaseModel):
     email: EmailStr = Field(..., description="A valid email address.")
 
 
-class RegisterUserRequest(RegisterUserBase):
+class LoginUserRequest(LoginUserBase):
     password: str = Field(..., min_length=8,
                           description="Password must be at least 8 characters long. Should contain ine uppercase, one numeral and one special character")
 
-    # def __init__(self, **data):
-    #     super().__init__(**data)
-    #     logger.info(f"INFO: Registration of user with: {self.email} started\n")
+    def __init__(self, **data):
+        super().__init__(**data)
+        logger.info(f"INFO: Login initiated for user with: {self.email}.\n")
 
     @field_validator("password")
     def validate_password(cls, password):
@@ -42,9 +40,20 @@ class RegisterUserRequest(RegisterUserBase):
             raise HTTPException(status_code=400, detail=str(e))
 
 
-class RegisterUserResponse(RegisterUserBase):
+class TokenSchema(BaseModel):
+    access_token: str
+    refresh_token: str
+
+
+class UserResponseSchema(BaseModel):
     user_id: UUID
-    created_at: datetime
+    name: str
+    email: str
+
+
+class LoginUserResponse(BaseModel):
+    user_details: UserResponseSchema
+    tokens: TokenSchema
 
     class Config:
         from_attributes = True
