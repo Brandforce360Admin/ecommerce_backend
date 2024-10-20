@@ -20,5 +20,5 @@ class UserApplication:
     def login_user(self, email: Email, password: Password) -> Tuple[User, Tokens]:
         user = self.user_service.validate_user_details(email)
         self.user_service.verify_password(user=user, plain_password=password)
-        tokens = self.token_service.generate_tokens(user)
+        tokens = self.token_service.generate_and_persist_tokens(user)
         return user, tokens

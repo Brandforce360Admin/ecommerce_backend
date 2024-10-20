@@ -1,10 +1,7 @@
-import logging
-
 import uvicorn
 from fastapi import FastAPI
-from sqlalchemy import MetaData
 
-from app.api.v1.endpoints import user
+from app.api.v1.endpoints.users import user
 from app.core.config import settings
 from app.db.base import Base, engine
 

@@ -24,8 +24,8 @@ class User(Base):
     _updated_at = Column(TIMESTAMP, nullable=True)
 
     def __init__(self, name: str, email: str):
-        self.name = name
-        self.email = email
+        self._name = name
+        self._email = email
 
     @property
     def name(self):

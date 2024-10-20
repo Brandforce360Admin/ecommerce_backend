@@ -1,15 +1,21 @@
 import datetime
 import secrets
+import uuid
 from uuid import UUID
 
 import jwt
 
 from app.core.config import settings
+from app.domain.models.session import Session
 from app.domain.models.users import User
+from app.domain.repositories.session_repository import SessionRepository
 from app.domain.value_objects.tokens import Tokens
 
 
 class TokenService:
+    def __init__(self, session_repository: SessionRepository):
+        self.session_repository = session_repository
+
     def convert_uuid_to_str(self, data):
         """Recursively convert UUIDs in the data to strings."""
         if isinstance(data, dict):
@@ -20,7 +26,7 @@ class TokenService:
             return str(data)
         return data
 
-    def generate_tokens(self, user: User, is_refresh=False) -> Tokens:
+    def generate_and_persist_tokens(self, user: User, is_refresh=False) -> Tokens:
         secret_key = settings.JWT_SECRET
         iat_time = datetime.datetime.now(datetime.UTC)
         expiration = iat_time + (
@@ -35,8 +41,10 @@ class TokenService:
         }
         payload = self.convert_uuid_to_str(payload)
 
-        # Encode JWT
         token = jwt.encode(payload, secret_key, algorithm=settings.ALGORITHM)
         access_token = token if isinstance(token, str) else token.decode('utf-8')
         refresh_token = secrets.token_urlsafe(32)
+        session_id = uuid.uuid4()
+        self.session_repository.create_session(
+            Session(session_id=session_id, user_id=user.user_id, refresh_token=refresh_token, expires_at=expiration))
         return Tokens(access_token=access_token, refresh_token=refresh_token)
