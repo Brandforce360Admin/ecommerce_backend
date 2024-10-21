@@ -44,9 +44,9 @@ def login_user(response: Response, login_user_request: LoginUserRequest,
             email=user.email
         )
         response_tokens = TokenSchema(
-            access_token=tokens.access_token,
+            access_token=tokens.access_token.access_token,
         )
-        response.set_cookie(key="refresh_token", value=tokens.refresh_token, httponly=True, secure=True,
+        response.set_cookie(key="refresh_token", value=tokens.refresh_token.refresh_token, httponly=True, secure=True,
                             samesite="lax", max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRY)
         return LoginUserResponse(user_details=user_details, tokens=response_tokens)
     except UserDoesNotExistsException as e:

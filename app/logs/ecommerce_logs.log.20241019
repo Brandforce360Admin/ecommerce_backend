@@ -1,0 +1,37 @@
+[2024-10-19 17:06:26,171] INFO in user: Attempting to register user with email: user@example.com
+[2024-10-19 17:08:32,784] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:08:32,784] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:09:01,571] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:09:01,571] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:09:10,451] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:09:10,451] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:11:18,873] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:11:18,873] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:12:41,477] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:12:41,477] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:15:00,540] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:15:00,540] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:15:14,228] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:15:14,228] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:16:08,953] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:16:08,953] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:17:29,666] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:17:29,666] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:18:02,256] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:18:02,256] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:18:02,334] INFO in user_service: INFO: Password hash do not match
+[2024-10-19 17:18:27,715] INFO in login_user: INFO: Login initiated for user with: user@example.com.
+
+[2024-10-19 17:18:27,715] INFO in user: Attempting to login user with email: user@example.com
+[2024-10-19 17:18:27,795] INFO in user_service: INFO: Password hash do not match
+[2024-10-19 17:18:27,795] ERROR in user: ERROR: User and email combination does not match for user with email: user@example.com

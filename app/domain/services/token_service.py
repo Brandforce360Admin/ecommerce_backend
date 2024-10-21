@@ -11,7 +11,7 @@ from app.domain.excptions.authentication_exceptions import InvalidTokenException
 from app.domain.models.session import Session
 from app.domain.models.users import User
 from app.domain.repositories.session_repository import SessionRepository
-from app.domain.value_objects.tokens import Tokens, AccessToken
+from app.domain.value_objects.tokens import Tokens, AccessToken, RefreshToken
 from app.domain.value_objects.user_id import UserId
 
 
@@ -70,7 +70,7 @@ class TokenService:
                         expires_at=expiration))
         elif is_refresh:
             pass
-        return Tokens(access_token=access_token, refresh_token=refresh_token)
+        return Tokens(access_token=AccessToken(access_token), refresh_token=RefreshToken(refresh_token))
 
     @staticmethod
     def decode_token(access_token: AccessToken) -> UserId:
