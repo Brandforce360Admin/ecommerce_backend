@@ -4,12 +4,15 @@ import uuid
 from uuid import UUID
 
 import jwt
+from jwt import InvalidTokenError
 
 from app.core.config import settings
+from app.domain.excptions.authentication_exceptions import InvalidTokenException
 from app.domain.models.session import Session
 from app.domain.models.users import User
 from app.domain.repositories.session_repository import SessionRepository
-from app.domain.value_objects.tokens import Tokens
+from app.domain.value_objects.tokens import Tokens, AccessToken
+from app.domain.value_objects.user_id import UserId
 
 
 class TokenService:
@@ -48,3 +51,15 @@ class TokenService:
         self.session_repository.create_session(
             Session(session_id=session_id, user_id=user.user_id, refresh_token=refresh_token, expires_at=expiration))
         return Tokens(access_token=access_token, refresh_token=refresh_token)
+
+    @staticmethod
+    def decode_token(access_token: AccessToken) -> UserId:
+        secret_key = settings.JWT_SECRET
+        try:
+            payload = jwt.decode(access_token.access_token, secret_key, algorithms=[settings.ALGORITHM])
+            user_id: str = payload.get("user_id")
+            if user_id is None:
+                raise InvalidTokenException("Access token does not contain user_id")
+            return UserId(user_id=uuid.UUID(user_id))
+        except InvalidTokenError:
+            raise InvalidTokenException("Error decoding access_token")

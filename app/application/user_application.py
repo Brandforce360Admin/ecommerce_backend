@@ -4,7 +4,8 @@ from app.domain.models.users import User
 from app.domain.services.token_service import TokenService
 from app.domain.value_objects.email import Email
 from app.domain.value_objects.password import Password
-from app.domain.value_objects.tokens import Tokens
+from app.domain.value_objects.tokens import Tokens, AccessToken
+from app.domain.value_objects.user_id import UserId
 
 
 class UserApplication:
@@ -22,3 +23,10 @@ class UserApplication:
         self.user_service.verify_password(user=user, plain_password=password)
         tokens = self.token_service.generate_and_persist_tokens(user)
         return user, tokens
+
+
+    def authenticate_user(self, user_id: UserId, access_token: AccessToken):
+        return self.user_service.authenticate_user(user_id, access_token)
+
+    def refresh_token(self, user_id: UserId, access_token: AccessToken):
+        pass

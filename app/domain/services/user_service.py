@@ -3,18 +3,23 @@ import datetime
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 
+from app.domain.excptions.authentication_exceptions import InvalidTokenException
 from app.domain.excptions.user_exceptions import UserAlreadyExistsException, UserDoesNotExistsException, \
     InvalidPasswordException
 from app.domain.models.users import User
 from app.domain.repositories.user_repository import UserRepository
+from app.domain.services.token_service import TokenService
 from app.domain.value_objects.email import Email
 from app.domain.value_objects.password import Password
+from app.domain.value_objects.tokens import AccessToken
+from app.domain.value_objects.user_id import UserId
 from app.logger import logger
 
 
 class UserService:
-    def __init__(self, user_repository: UserRepository):
+    def __init__(self, user_repository: UserRepository, token_service: TokenService = None):
         self.user_repository = user_repository
+        self.token_service = token_service
 
     def check_if_user_already_exists(self, user: User):
         user = self.user_repository.get_by_email(Email(user.email))
@@ -35,6 +40,9 @@ class UserService:
         new_user = self.user_repository.create_user(user)
         return new_user
 
+    def get_user_details_by_id(self, user_id: UserId) -> User:
+        return self.user_repository.get_by_id(user_id)
+
     @staticmethod
     def verify_password(user: User, plain_password: Password):
         try:
@@ -42,3 +50,12 @@ class UserService:
         except VerifyMismatchError as e:
             logger.info("INFO: Password hash do not match")
             raise InvalidPasswordException("INFO: Password hash do not match")
+
+    def authenticate_user(self, user_id: UserId, access_token: AccessToken) -> User:
+        decoded_user_id = self.token_service.decode_token(access_token=access_token)
+        if not decoded_user_id.user_id == user_id.user_id:
+            raise InvalidTokenException(f"Token is invalid for user_id {user_id.user_id}")
+        user_details = self.get_user_details_by_id(user_id)
+        if user_details is None:
+            raise UserDoesNotExistsException(f"User with user_id {user_id.user_id} does not exists")
+        return user_details
