@@ -30,13 +30,13 @@ class UserApplication:
         pass
 
     def refresh_token(self, user_id: UserId, access_token: AccessToken):
-        authenticated_user = self.authenticate_user(user_id, access_token)
+        authenticated_user = self.user_service.authenticate_user(user_id, access_token)
         return self.token_service.generate_access_token(authenticated_user)
 
     def refresh_session(self):
         pass
-
-    def authenticate_user(self, user_id: UserId, access_token: AccessToken):
-        return self.user_service.authenticate_user(user_id, access_token)
+    #
+    # def authenticate_user(self, user_id: UserId, access_token: AccessToken):
+    #     return self.user_service.authenticate_user(user_id, access_token)
 
 

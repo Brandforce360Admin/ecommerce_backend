@@ -40,10 +40,6 @@ class LoginUserRequest(LoginUserBase):
             raise HTTPException(status_code=400, detail=str(e))
 
 
-class TokenSchema(BaseModel):
-    access_token: str
-
-
 class UserResponseSchema(BaseModel):
     user_id: UUID
     name: str
@@ -52,7 +48,7 @@ class UserResponseSchema(BaseModel):
 
 class LoginUserResponse(BaseModel):
     user_details: UserResponseSchema
-    tokens: TokenSchema
+    access_token: str
 
     class Config:
         from_attributes = True

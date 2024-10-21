@@ -1,6 +1,7 @@
 import os
 
 from dotenv import load_dotenv
+from pydantic import ConfigDict
 from pydantic_settings import BaseSettings
 
 # Load environment variables from .env file
@@ -17,8 +18,7 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = os.getenv("LOG_LEVEL")
     JWT_SECRET: str = os.getenv("JWT_SECRET")
 
-    class Config:
-        env_file = ".env"
+    model_config = ConfigDict(env_file=".env")
 
 
 settings = Settings()

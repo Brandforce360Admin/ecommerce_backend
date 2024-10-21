@@ -3,7 +3,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi import Response
 
-from app.api.v1.schemas.users.login_user import LoginUserResponse, TokenSchema, LoginUserRequest, UserResponseSchema
+from app.api.v1.schemas.users.login_user import LoginUserResponse, LoginUserRequest, UserResponseSchema
 from app.api.v1.schemas.users.register_user import RegisterUserRequest, RegisterUserResponse
 from app.application.user_application import UserApplication
 from app.core.config import settings
@@ -43,12 +43,9 @@ def login_user(response: Response, login_user_request: LoginUserRequest,
             name=user.name,
             email=user.email
         )
-        response_tokens = TokenSchema(
-            access_token=tokens.access_token.access_token,
-        )
         response.set_cookie(key="refresh_token", value=tokens.refresh_token.refresh_token, httponly=True, secure=True,
                             samesite="lax", max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRY)
-        return LoginUserResponse(user_details=user_details, tokens=response_tokens)
+        return LoginUserResponse(user_details=user_details, access_token=tokens.access_token.access_token)
     except UserDoesNotExistsException as e:
         logger.error(f"ERROR: User with email: {login_user.email} does not exists.")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
