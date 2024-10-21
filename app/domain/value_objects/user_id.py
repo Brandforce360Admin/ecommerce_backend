@@ -1,5 +1,6 @@
 import uuid
 
+
 class UserId:
     def __init__(self, user_id: uuid.UUID):
         self._user_id = user_id

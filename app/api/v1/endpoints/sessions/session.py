@@ -14,16 +14,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 @router.post("/{user_id}/token/refresh", response_model=TokenSchema)
-def refresh_user_tokens(refresh_token: RefreshTokenRequest,
-                        user_application: UserApplication = Depends(get_user_application),
-                        token: str = Depends(oauth2_scheme)):
+def refresh_user_token(refresh_token_request: RefreshTokenRequest,
+                       user_application: UserApplication = Depends(get_user_application),
+                       token: str = Depends(oauth2_scheme)):
     try:
-        user_application.refresh_token(user_id=UserId(refresh_token.user_id), access_token=AccessToken(token))
+        user_application.refresh_token(user_id=UserId(refresh_token_request.user_id), access_token=AccessToken(token))
     except UserAlreadyExistsException as e:
 
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
 
 
-@router.post("/{user_id}/sessions/refresh", response_model=None)
+@router.post("/{user_id}/session/refresh", response_model=None)
 def refresh_user_session():
     pass

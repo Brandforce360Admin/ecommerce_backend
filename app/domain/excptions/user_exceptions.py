@@ -2,6 +2,7 @@ class UserAlreadyExistsException(Exception):
     def __init__(self, message: str):
         self.message = message
 
+
 class UserDoesNotExistsException(Exception):
     def __init__(self, message: str):
         self.message = message

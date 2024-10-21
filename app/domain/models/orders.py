@@ -1,8 +1,8 @@
 import uuid
 
 from sqlalchemy import Column, String, Enum, UUID, TIMESTAMP, ForeignKey
-from app.db.base import Base
 
+from app.db.base import Base
 
 
 class Order(Base):

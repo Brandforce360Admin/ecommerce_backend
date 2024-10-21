@@ -1,6 +1,7 @@
 import uuid
 
 from sqlalchemy import Column, UUID, String, TIMESTAMP, ForeignKey, Integer
+
 from app.db.base import Base
 
 

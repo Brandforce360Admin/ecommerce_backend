@@ -15,8 +15,10 @@ class AddressBase(BaseModel):
     is_billing: bool = False
     is_shipping: bool = False
 
+
 class AddressCreate(AddressBase):
     pass
+
 
 class AddressResponse(AddressBase):
     id: UUID

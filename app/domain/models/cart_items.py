@@ -1,8 +1,8 @@
 import uuid
 
 from sqlalchemy import Column, UUID, TIMESTAMP, ForeignKey, Integer
-from app.db.base import Base
 
+from app.db.base import Base
 
 
 class CartItem(Base):

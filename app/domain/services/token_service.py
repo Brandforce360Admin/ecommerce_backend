@@ -29,6 +29,22 @@ class TokenService:
             return str(data)
         return data
 
+    def generate_access_token(self, user: User) -> AccessToken:
+        secret_key = settings.JWT_SECRET
+        iat_time = datetime.datetime.now(datetime.UTC)
+        expiration = iat_time + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRY)
+        payload = {
+            'user_id': user.user_id,
+            'role': user.role.value,
+            'exp': expiration,
+            'iat': iat_time
+        }
+        payload = self.convert_uuid_to_str(payload)
+
+        token = jwt.encode(payload, secret_key, algorithm=settings.ALGORITHM)
+        access_token = token if isinstance(token, str) else token.decode('utf-8')
+        return AccessToken(access_token=access_token)
+
     def generate_and_persist_tokens(self, user: User, is_refresh=False) -> Tokens:
         secret_key = settings.JWT_SECRET
         iat_time = datetime.datetime.now(datetime.UTC)
@@ -48,8 +64,12 @@ class TokenService:
         access_token = token if isinstance(token, str) else token.decode('utf-8')
         refresh_token = secrets.token_urlsafe(32)
         session_id = uuid.uuid4()
-        self.session_repository.create_session(
-            Session(session_id=session_id, user_id=user.user_id, refresh_token=refresh_token, expires_at=expiration))
+        if not is_refresh:
+            self.session_repository.create_session(
+                Session(session_id=session_id, user_id=user.user_id, refresh_token=refresh_token,
+                        expires_at=expiration))
+        elif is_refresh:
+            pass
         return Tokens(access_token=access_token, refresh_token=refresh_token)
 
     @staticmethod
