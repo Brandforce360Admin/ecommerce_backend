@@ -13,7 +13,7 @@ router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
-@router.post("/refresh", response_model=TokenSchema)
+@router.post("/{user_id}/token/refresh", response_model=TokenSchema)
 def refresh_user_tokens(refresh_token: RefreshTokenRequest,
                         user_application: UserApplication = Depends(get_user_application),
                         token: str = Depends(oauth2_scheme)):
@@ -22,3 +22,8 @@ def refresh_user_tokens(refresh_token: RefreshTokenRequest,
     except UserAlreadyExistsException as e:
 
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(e))
+
+
+@router.post("/{user_id}/sessions/refresh", response_model=None)
+def refresh_user_session():
+    pass

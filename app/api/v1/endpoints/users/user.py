@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi import Response
 
@@ -54,3 +56,13 @@ def login_user(response: Response, login_user_request: LoginUserRequest,
         logger.error(
             f"ERROR: User and email combination does not match for user with email: {login_user_request.email}")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@router.post("/{user_id}/logout", response_model=None)
+def logout_user(user_id: UUID):
+    pass
+
+
+@router.delete("/{user_id}/delete", response_model=None)
+def delete_user():
+    pass
