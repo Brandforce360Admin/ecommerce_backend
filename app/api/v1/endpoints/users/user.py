@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import Response
 
 from app.api.v1.schemas.users.login_user import LoginUserResponse, TokenSchema, LoginUserRequest, UserResponseSchema
 from app.api.v1.schemas.users.register_user import RegisterUserRequest, RegisterUserResponse
 from app.application.user_application import UserApplication
+from app.core.config import settings
 from app.dependencies import get_user_application
 from app.domain.excptions.user_exceptions import UserAlreadyExistsException, UserDoesNotExistsException, \
     InvalidPasswordException
@@ -27,7 +29,9 @@ def register_user(user: RegisterUserRequest, user_application: UserApplication =
 
 
 @router.post("/login", response_model=LoginUserResponse)
-def login_user(login_user_request: LoginUserRequest, user_application: UserApplication = Depends(get_user_application)):
+def login_user(response: Response, login_user_request: LoginUserRequest,
+               user_application: UserApplication = Depends(get_user_application),
+               ):
     logger.info(f"Attempting to login user with email: {login_user_request.email}")
     try:
         user, tokens = user_application.login_user(Email(login_user_request.email),
@@ -37,11 +41,12 @@ def login_user(login_user_request: LoginUserRequest, user_application: UserAppli
             name=user.name,
             email=user.email
         )
-        tokens = TokenSchema(
+        response_tokens = TokenSchema(
             access_token=tokens.access_token,
-            refresh_token=tokens.refresh_token
         )
-        return LoginUserResponse(user_details=user_details, tokens=tokens)
+        response.set_cookie(key="refresh_token", value=tokens.refresh_token, httponly=True, secure=True,
+                            samesite="lax", max_age=60 * 60 * 24 * settings.REFRESH_TOKEN_EXPIRY)
+        return LoginUserResponse(user_details=user_details, tokens=response_tokens)
     except UserDoesNotExistsException as e:
         logger.error(f"ERROR: User with email: {login_user.email} does not exists.")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))

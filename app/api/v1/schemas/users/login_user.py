@@ -42,7 +42,6 @@ class LoginUserRequest(LoginUserBase):
 
 class TokenSchema(BaseModel):
     access_token: str
-    refresh_token: str
 
 
 class UserResponseSchema(BaseModel):
