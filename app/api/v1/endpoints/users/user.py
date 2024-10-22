@@ -6,13 +6,14 @@ from fastapi.security import OAuth2PasswordBearer
 
 from app.api.v1.schemas.users.delete_user import DeleteUserResponse
 from app.api.v1.schemas.users.login_user import LoginUserResponse, LoginUserRequest, UserResponseSchema
+from app.api.v1.schemas.users.logout_user import LogoutUserResponse
 from app.api.v1.schemas.users.register_user import RegisterUserRequest, RegisterUserResponse
 from app.application.user_application import UserApplication
 from app.core.config import settings
 from app.dependencies import get_user_application
 from app.domain.excptions.authentication_exceptions import InvalidTokenException
 from app.domain.excptions.user_exceptions import UserAlreadyExistsException, UserDoesNotExistsException, \
-    InvalidPasswordException
+    InvalidPasswordException, UserNonLoggedInException
 from app.domain.models.users import User
 from app.domain.value_objects.email import Email
 from app.domain.value_objects.password import Password
@@ -62,18 +63,34 @@ def login_user(response: Response, login_user_request: LoginUserRequest,
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.post("/{user_id}/logout", response_model=None)
-def logout_user(user_id: UUID):
-    pass
+@router.post("/{user_id}/logout", response_model=LogoutUserResponse)
+def logout_user(user_id: UUID, user_application: UserApplication = Depends(get_user_application),
+                access_token: str = Depends(oauth2_scheme)):
+    logger.info(f"Attempting to logout user with user_id: {user_id}")
+    try:
+        email_id = user_application.logout_user(UserId(user_id=user_id), AccessToken(access_token=access_token))
+        return LogoutUserResponse(email=email_id.email)
+    except UserNonLoggedInException as e:
+        logger.error(f"ERROR: User with user_id: {user_id} not logged in.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
+    except InvalidTokenException as e:
+        logger.error(f"ERROR: User with user_id: {user_id} does not exists.")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except UserDoesNotExistsException as e:
+        logger.error(f"ERROR: User with user_id: {user_id} does not exists.")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
 
 
-@router.delete("/{user_id}/delete", response_model=None)
+@router.delete("/{user_id}/delete", response_model=DeleteUserResponse)
 def delete_user(user_id: UUID, user_application: UserApplication = Depends(get_user_application),
                 access_token: str = Depends(oauth2_scheme)):
     logger.info(f"Attempting to delete user with user_id: {user_id}")
     try:
         email_id = user_application.delete_user(UserId(user_id=user_id), AccessToken(access_token=access_token))
         return DeleteUserResponse(email=email_id.email)
+    except UserNonLoggedInException as e:
+        logger.error(f"ERROR: User with user_id: {user_id} not logged in.")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
     except InvalidTokenException as e:
         logger.error(f"ERROR: User with user_id: {user_id} does not exists.")
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

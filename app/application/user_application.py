@@ -23,8 +23,10 @@ class UserApplication:
         tokens = self.token_service.generate_and_persist_tokens(user)
         return user, tokens
 
-    def logout_user(self, user_id: UserId):
-        pass
+    def logout_user(self, user_id: UserId, access_token: AccessToken) -> Email:
+        authenticated_user = self.user_service.authenticate_user(user_id, access_token)
+        self.user_service.logout_user(authenticated_user)
+        return Email(email=authenticated_user.email)
 
     def delete_user(self, user_id: UserId, access_token: AccessToken) -> Email:
         authenticated_user = self.user_service.authenticate_user(user_id, access_token)

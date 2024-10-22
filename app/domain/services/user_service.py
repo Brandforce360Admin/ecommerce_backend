@@ -5,7 +5,7 @@ from argon2.exceptions import VerifyMismatchError
 
 from app.domain.excptions.authentication_exceptions import InvalidTokenException
 from app.domain.excptions.user_exceptions import UserAlreadyExistsException, UserDoesNotExistsException, \
-    InvalidPasswordException
+    InvalidPasswordException, UserNonLoggedInException
 from app.domain.models.users import User
 from app.domain.repositories.user_repository import UserRepository
 from app.domain.services.token_service import TokenService
@@ -41,8 +41,11 @@ class UserService:
         return new_user
 
     def delete_user(self, user: User):
-        self.token_service.delete_tokens(user)
+        self.token_service.delete_session(user)
         self.user_repository.delete_user(user)
+
+    def logout_user(self, user: User):
+        self.token_service.delete_session(user)
 
     def get_user_details_by_id(self, user_id: UserId) -> User:
         return self.user_repository.get_by_id(user_id)
@@ -59,6 +62,9 @@ class UserService:
         decoded_user_id = self.token_service.decode_token(access_token=access_token)
         if not decoded_user_id.user_id == user_id.user_id:
             raise InvalidTokenException(f"Token is invalid for user_id {user_id.user_id}")
+        user_session = self.token_service.get_session_by_user_id(user_id=user_id)
+        if user_session is None:
+            raise UserNonLoggedInException(f"User with user_id {user_id.user_id} is not logged in")
         user_details = self.get_user_details_by_id(user_id)
         if user_details is None:
             raise UserDoesNotExistsException(f"User with user_id {user_id.user_id} does not exists")

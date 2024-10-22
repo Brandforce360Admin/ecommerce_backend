@@ -8,6 +8,11 @@ class UserDoesNotExistsException(Exception):
         self.message = message
 
 
+class UserNonLoggedInException(Exception):
+    def __init__(self, message: str):
+        self.message = message
+
+
 class InvalidPasswordException(Exception):
     def __init__(self, message: str):
         self.message = message

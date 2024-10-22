@@ -45,8 +45,11 @@ class TokenService:
         access_token = token if isinstance(token, str) else token.decode('utf-8')
         return AccessToken(access_token=access_token)
 
-    def delete_tokens(self, user: User):
+    def delete_session(self, user: User):
         self.session_repository.delete_session(UserId(user_id=user.user_id))
+
+    def get_session_by_user_id(self, user_id: UserId):
+        return self.session_repository.get_session(user_id)
 
     def generate_and_persist_tokens(self, user: User, is_refresh=False) -> Tokens:
         secret_key = settings.JWT_SECRET

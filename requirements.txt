@@ -12,5 +12,8 @@ psycopg2
 starlette
 argon2-cffi
 PyJWT
+httpx
+pytest
+allure-pytest
 pytest
 httpx
