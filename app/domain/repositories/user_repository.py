@@ -18,3 +18,7 @@ class UserRepository:
         self.db_session.commit()
         self.db_session.refresh(user)
         return user
+
+    def delete_user(self, user: User):
+        self.db_session.delete(user)
+        self.db_session.commit()

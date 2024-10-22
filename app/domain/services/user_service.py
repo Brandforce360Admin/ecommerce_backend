@@ -40,6 +40,9 @@ class UserService:
         new_user = self.user_repository.create_user(user)
         return new_user
 
+    def delete_user(self, user: User):
+        self.user_repository.delete_user(user)
+
     def get_user_details_by_id(self, user_id: UserId) -> User:
         return self.user_repository.get_by_id(user_id)
 

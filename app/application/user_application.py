@@ -26,17 +26,17 @@ class UserApplication:
     def logout_user(self, user_id: UserId):
         pass
 
-    def delete_user(self, user_id: UserId):
-        pass
+    def delete_user(self, user_id: UserId, access_token: AccessToken) -> Email:
+        authenticated_user = self.user_service.authenticate_user(user_id, access_token)
+        self.user_service.delete_user(user=authenticated_user)
+        return Email(email=authenticated_user.email)
 
     def refresh_token(self, user_id: UserId, access_token: AccessToken):
         authenticated_user = self.user_service.authenticate_user(user_id, access_token)
-        return self.token_service.generate_access_token(authenticated_user)
+        return self.token_service.generate_access_token(user=authenticated_user)
 
     def refresh_session(self):
         pass
     #
     # def authenticate_user(self, user_id: UserId, access_token: AccessToken):
     #     return self.user_service.authenticate_user(user_id, access_token)
-
-
