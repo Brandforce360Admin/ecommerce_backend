@@ -23,8 +23,9 @@ def get_token_service(session_repository: SessionRepository = Depends(get_sessio
     return TokenService(session_repository)
 
 
-def get_user_service(user_repository: UserRepository = Depends(get_user_repository)):
-    return UserService(user_repository)
+def get_user_service(user_repository: UserRepository = Depends(get_user_repository),
+                     token_service: TokenService = Depends(get_token_service)):
+    return UserService(user_repository, token_service)
 
 
 def get_user_application(user_service: UserService = Depends(get_user_service),

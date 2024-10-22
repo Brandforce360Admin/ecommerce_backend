@@ -39,7 +39,7 @@ class RegisterUserRequest(RegisterUserBase):
             return password
         except ValueError as e:
             logger.error(str(e))
-            raise HTTPException(status_code=400, detail=str(e))
+            raise HTTPException(status_code=422, detail=str(e))
 
 
 class RegisterUserResponse(RegisterUserBase):

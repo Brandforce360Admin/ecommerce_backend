@@ -17,7 +17,7 @@ from app.logger import logger
 
 
 class UserService:
-    def __init__(self, user_repository: UserRepository, token_service: TokenService = None):
+    def __init__(self, user_repository: UserRepository, token_service: TokenService):
         self.user_repository = user_repository
         self.token_service = token_service
 
@@ -41,6 +41,7 @@ class UserService:
         return new_user
 
     def delete_user(self, user: User):
+        self.token_service.delete_tokens(user)
         self.user_repository.delete_user(user)
 
     def get_user_details_by_id(self, user_id: UserId) -> User:
