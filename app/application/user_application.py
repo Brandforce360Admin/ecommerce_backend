@@ -20,7 +20,7 @@ class UserApplication:
     def login_user(self, email: Email, password: Password) -> Tuple[User, Tokens]:
         user = self.user_service.validate_user_details(email)
         self.user_service.verify_password(user=user, plain_password=password)
-        tokens = self.token_service.generate_and_persist_tokens(user)
+        tokens = self.token_service.generate_tokens(user)
         return user, tokens
 
     def logout_user(self, user_id: UserId, access_token: AccessToken) -> Email:
@@ -35,7 +35,7 @@ class UserApplication:
 
     def refresh_token(self, user_id: UserId, access_token: AccessToken):
         authenticated_user = self.user_service.authenticate_user(user_id, access_token)
-        return self.token_service.generate_access_token(user=authenticated_user)
+        return self.token_service.generate_token_and_process_session(user=authenticated_user)
 
     def refresh_session(self):
         pass
