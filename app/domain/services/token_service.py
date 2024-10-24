@@ -11,13 +11,16 @@ from app.domain.excptions.authentication_exceptions import InvalidTokenException
 from app.domain.models.session import Session
 from app.domain.models.users import User
 from app.domain.repositories.session_repository import SessionRepository
+from app.domain.services.session_service import SessionService
+from app.domain.value_objects.expiry import Expiry
 from app.domain.value_objects.tokens import Tokens, AccessToken, RefreshToken
 from app.domain.value_objects.user_id import UserId
 
 
 class TokenService:
-    def __init__(self, session_repository: SessionRepository):
+    def __init__(self, session_repository: SessionRepository, session_service: SessionService):
         self.session_repository = session_repository
+        self.session_service = session_service
 
     def convert_uuid_to_str(self, data):
         """Recursively convert UUIDs in the data to strings."""
@@ -29,21 +32,42 @@ class TokenService:
             return str(data)
         return data
 
-    def generate_access_token(self, user: User) -> AccessToken:
+    def generate_token_and_process_session(self, user: User, is_refresh=None) -> Tokens:
         secret_key = settings.JWT_SECRET
         iat_time = datetime.datetime.now(datetime.UTC)
-        expiration = iat_time + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRY)
-        payload = {
+        access_token_expiration = iat_time + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRY)
+        refresh_token_expiration = iat_time + datetime.timedelta(minutes=settings.REFRESH_TOKEN_EXPIRY)
+        session_id = uuid.uuid4()
+        access_token_payload = {
             'user_id': user.user_id,
             'role': user.role.value,
-            'exp': expiration,
+            'exp': access_token_expiration,
+            'session_id': session_id,
             'iat': iat_time
         }
-        payload = self.convert_uuid_to_str(payload)
+        refresh_token_payload = {
+            'user_id': user.user_id,
+            'role': user.role.value,
+            'exp': refresh_token_expiration,
+            'session_id': session_id,
+            'iat': iat_time
+        }
+        access_token_payload = self.convert_uuid_to_str(access_token_payload)
+        refresh_token_payload = self.convert_uuid_to_str(refresh_token_payload)
 
-        token = jwt.encode(payload, secret_key, algorithm=settings.ALGORITHM)
-        access_token = token if isinstance(token, str) else token.decode('utf-8')
-        return AccessToken(access_token=access_token)
+        access_token = jwt.encode(access_token_payload, secret_key, algorithm=settings.ALGORITHM)
+        refresh_token = jwt.encode(refresh_token_payload, secret_key, algorithm=settings.ALGORITHM)
+        refresh_token = RefreshToken(refresh_token=refresh_token)
+        if is_refresh:
+            self.session_service.update_session_for_user(user=user,
+                                                         refresh_token=refresh_token,
+                                                         expiry=Expiry(refresh_token_expiration))
+        else:
+            self.session_service.create_session_for_user(user=user,
+                                                         refresh_token=refresh_token,
+                                                         expiry=Expiry(refresh_token_expiration))
+
+        return Tokens(access_token=AccessToken(access_token), refresh_token=refresh_token)
 
     def delete_session(self, user: User):
         self.session_repository.delete_session(UserId(user_id=user.user_id))
@@ -51,14 +75,14 @@ class TokenService:
     def get_session_by_user_id(self, user_id: UserId):
         return self.session_repository.get_session(user_id)
 
-    def generate_and_persist_tokens(self, user: User, is_refresh=False) -> Tokens:
+    def generate_tokens(self, user: User, is_refresh=False) -> Tokens:
         secret_key = settings.JWT_SECRET
         iat_time = datetime.datetime.now(datetime.UTC)
         expiration = iat_time + (
             datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRY) if not is_refresh else datetime.timedelta(
                 days=settings.REFRESH_TOKEN_EXPIRY)
         )
-        payload = {
+        access_token_payload = {
             'user_id': user.user_id,
             'role': user.role.value,
             'exp': expiration,
@@ -66,8 +90,10 @@ class TokenService:
         }
         payload = self.convert_uuid_to_str(payload)
 
-        token = jwt.encode(payload, secret_key, algorithm=settings.ALGORITHM)
-        access_token = token if isinstance(token, str) else token.decode('utf-8')
+        access_token = jwt.encode(payload, secret_key, algorithm=settings.ALGORITHM)
+        refresh_token = jwt.encode(payload, secret_key, algorithm=settings.ALGORITHM)
+        access_token = access_token if isinstance(access_token, str) else access_token.decode('utf-8')
+        refresh_token = access_token if isinstance(access_token, str) else access_token.decode('utf-8')
         refresh_token = secrets.token_urlsafe(32)
         session_id = uuid.uuid4()
         if not is_refresh:

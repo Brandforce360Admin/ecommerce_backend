@@ -17,6 +17,9 @@ class SessionService:
             Session(session_id=uuid.uuid4(), user_id=user.user_id, refresh_token=refresh_token.refresh_token,
                     expires_at=expiry.expiry))
 
+    def update_session_for_user(self, user: User, refresh_token: RefreshToken, expiry: Expiry):
+        pass
+
     def get_user_session_by_id(self, user: User, session_id: SessionId):
         pass
 

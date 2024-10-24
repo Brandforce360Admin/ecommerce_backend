@@ -40,15 +40,20 @@ class LoginUserRequest(LoginUserBase):
             raise HTTPException(status_code=400, detail=str(e))
 
 
-class UserResponseSchema(BaseModel):
+class LoginUserDetailsSchema(BaseModel):
     user_id: UUID
     name: str
     email: str
 
 
-class LoginUserResponse(BaseModel):
-    user_details: UserResponseSchema
+class LoginUserTokenSchema(BaseModel):
     access_token: str
+    refresh_token: str
+
+
+class LoginUserResponse(BaseModel):
+    user_details: LoginUserDetailsSchema
+    tokens: LoginUserTokenSchema
 
     class Config:
         from_attributes = True
