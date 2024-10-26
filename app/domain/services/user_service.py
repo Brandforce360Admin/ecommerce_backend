@@ -59,7 +59,8 @@ class UserService:
             raise InvalidPasswordException("INFO: Password hash do not match")
 
     def authenticate_user(self, user_id: UserId, access_token: AccessToken) -> User:
-        decoded_user_id = self.token_service.decode_token(access_token=access_token)
+        decoded_user_id, decoded_session_id, decoded_role = self.token_service.decode_and_authenticate_token(
+            access_token=access_token)
         if not decoded_user_id.user_id == user_id.user_id:
             raise InvalidTokenException(f"Token is invalid for user_id {user_id.user_id}")
         user_session = self.token_service.get_session_by_user_id(user_id=user_id)

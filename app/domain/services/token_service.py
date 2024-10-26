@@ -1,18 +1,18 @@
 import datetime
-import secrets
 import uuid
+from typing import Tuple
 from uuid import UUID
 
 import jwt
 from jwt import InvalidTokenError
 
 from app.core.config import settings
-from app.domain.excptions.authentication_exceptions import InvalidTokenException
-from app.domain.models.session import Session
-from app.domain.models.users import User
+from app.domain.excptions.authentication_exceptions import InvalidTokenException, TokenExpiredException
+from app.domain.models.users import User, UserRole
 from app.domain.repositories.session_repository import SessionRepository
 from app.domain.services.session_service import SessionService
 from app.domain.value_objects.expiry import Expiry
+from app.domain.value_objects.session_id import SessionId
 from app.domain.value_objects.tokens import Tokens, AccessToken, RefreshToken
 from app.domain.value_objects.user_id import UserId
 
@@ -69,49 +69,27 @@ class TokenService:
 
         return Tokens(access_token=AccessToken(access_token), refresh_token=refresh_token)
 
-    def delete_session(self, user: User):
-        self.session_repository.delete_session(UserId(user_id=user.user_id))
-
-    def get_session_by_user_id(self, user_id: UserId):
-        return self.session_repository.get_session(user_id)
-
-    def generate_tokens(self, user: User, is_refresh=False) -> Tokens:
-        secret_key = settings.JWT_SECRET
-        iat_time = datetime.datetime.now(datetime.UTC)
-        expiration = iat_time + (
-            datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRY) if not is_refresh else datetime.timedelta(
-                days=settings.REFRESH_TOKEN_EXPIRY)
-        )
-        access_token_payload = {
-            'user_id': user.user_id,
-            'role': user.role.value,
-            'exp': expiration,
-            'iat': iat_time
-        }
-        payload = self.convert_uuid_to_str(payload)
-
-        access_token = jwt.encode(payload, secret_key, algorithm=settings.ALGORITHM)
-        refresh_token = jwt.encode(payload, secret_key, algorithm=settings.ALGORITHM)
-        access_token = access_token if isinstance(access_token, str) else access_token.decode('utf-8')
-        refresh_token = access_token if isinstance(access_token, str) else access_token.decode('utf-8')
-        refresh_token = secrets.token_urlsafe(32)
-        session_id = uuid.uuid4()
-        if not is_refresh:
-            self.session_repository.create_session(
-                Session(session_id=session_id, user_id=user.user_id, refresh_token=refresh_token,
-                        expires_at=expiration))
-        elif is_refresh:
-            pass
-        return Tokens(access_token=AccessToken(access_token), refresh_token=RefreshToken(refresh_token))
-
     @staticmethod
-    def decode_token(access_token: AccessToken) -> UserId:
+    def decode_and_authenticate_token(access_token: AccessToken) -> Tuple[UserId, SessionId, UserRole]:
         secret_key = settings.JWT_SECRET
         try:
             payload = jwt.decode(access_token.access_token, secret_key, algorithms=[settings.ALGORITHM])
+            expiry: datetime = payload.get("exp")
+            if expiry < datetime.datetime.now(datetime.UTC):
+                raise TokenExpiredException("Access token expired")
+            iat: datetime = payload.get("iat")
+            access_token_expiration = iat + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRY)
+            if access_token_expiration != expiry:
+                raise InvalidTokenException("Access token is invalid")
             user_id: str = payload.get("user_id")
             if user_id is None:
                 raise InvalidTokenException("Access token does not contain user_id")
-            return UserId(user_id=uuid.UUID(user_id))
+            role: str = payload.get("role")
+            if role is None:
+                raise InvalidTokenException("Access token does not contain role")
+            session_id: str = payload.get("session_id")
+            if session_id is None:
+                raise InvalidTokenException("Access token does not contain session_id")
+            return UserId(user_id=uuid.UUID(user_id)), SessionId(session_id=uuid.UUID(session_id)), UserRole[role]
         except InvalidTokenError:
             raise InvalidTokenException("Error decoding access_token")
