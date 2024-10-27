@@ -6,6 +6,7 @@ from app.domain.repositories.session_repository import SessionRepository
 from app.domain.value_objects.expiry import Expiry
 from app.domain.value_objects.session_id import SessionId
 from app.domain.value_objects.tokens import RefreshToken
+from app.domain.value_objects.user_id import UserId
 
 
 class SessionService:
@@ -26,8 +27,8 @@ class SessionService:
     def get_all_user_sessions(self, user: User):
         pass
 
-    def delete_session_for_user(self, user: User, session_id: SessionId):
-        pass
+    def delete_session_for_user(self, user_id: UserId, session_id: SessionId):
+        self.session_repository.delete_user_session(user_id=user_id, session_id=session_id)
 
-    def delete_all_sessions_for_user(self, user: User):
-        pass
+    def delete_all_sessions_for_user(self, user_id: UserId):
+        self.session_repository.delete_all_user_sessions(user_id=user_id)

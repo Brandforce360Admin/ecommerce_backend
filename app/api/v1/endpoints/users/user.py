@@ -1,29 +1,27 @@
-from uuid import UUID
+from functools import partial
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi import Response
 from fastapi.security import OAuth2PasswordBearer
 
-from app.api.v1.schemas.users.delete_user import DeleteUserResponse
 from app.api.v1.schemas.users.login_user import LoginUserResponse, LoginUserRequest, LoginUserDetailsSchema, \
     LoginUserTokenSchema
-from app.api.v1.schemas.users.logout_user import LogoutUserResponse
 from app.api.v1.schemas.users.register_user import RegisterUserRequest, RegisterUserResponse
 from app.application.user_application import UserApplication
 from app.dependencies import get_user_application
-from app.domain.excptions.authentication_exceptions import InvalidTokenException
+from app.domain.authenticate_authorise import authenticate_and_authorise_user
 from app.domain.excptions.user_exceptions import UserAlreadyExistsException, UserDoesNotExistsException, \
-    InvalidPasswordException, UserNonLoggedInException
-from app.domain.models.users import User
+    InvalidPasswordException
+from app.domain.models.users import User, UserRole
 from app.domain.value_objects.email import Email
 from app.domain.value_objects.password import Password
-from app.domain.value_objects.tokens import AccessToken
+from app.domain.value_objects.session_id import SessionId
 from app.domain.value_objects.user_id import UserId
 from app.logger import logger
 
 router = APIRouter()
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+customer_role_dependency = partial(authenticate_and_authorise_user, required_role=UserRole.customer)
 
 
 @router.post("/register", response_model=RegisterUserResponse)
@@ -39,7 +37,7 @@ def register_user(user: RegisterUserRequest, user_application: UserApplication =
 
 
 @router.post("/login", response_model=LoginUserResponse)
-def login_user(response: Response, login_user_request: LoginUserRequest,
+def login_user(login_user_request: LoginUserRequest,
                user_application: UserApplication = Depends(get_user_application),
                ):
     logger.info(f"Attempting to login user with email: {login_user_request.email}")
@@ -67,37 +65,15 @@ def login_user(response: Response, login_user_request: LoginUserRequest,
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.post("/{user_id}/logout", response_model=LogoutUserResponse)
-def logout_user(user_id: UUID, user_application: UserApplication = Depends(get_user_application),
-                access_token: str = Depends(oauth2_scheme)):
+@router.post("/{user_id}/logout")
+def logout_user(user_id: UserId, session_id: SessionId = Depends(customer_role_dependency),
+                user_application: UserApplication = Depends(get_user_application)):
     logger.info(f"Attempting to logout user with user_id: {user_id}")
-    try:
-        email_id = user_application.logout_user(UserId(user_id=user_id), AccessToken(access_token=access_token))
-        return LogoutUserResponse(email=email_id.email)
-    except UserNonLoggedInException as e:
-        logger.error(f"ERROR: User with user_id: {user_id} not logged in.")
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
-    except InvalidTokenException as e:
-        logger.error(f"ERROR: User with user_id: {user_id} does not exists.")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except UserDoesNotExistsException as e:
-        logger.error(f"ERROR: User with user_id: {user_id} does not exists.")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    user_application.logout_user(user_id=user_id, session_id=session_id)
 
 
-@router.delete("/{user_id}/delete", response_model=DeleteUserResponse)
-def delete_user(user_id: UUID, user_application: UserApplication = Depends(get_user_application),
-                access_token: str = Depends(oauth2_scheme)):
+@router.delete("/{user_id}/delete")
+def delete_user(user_id: UserId = Depends(customer_role_dependency),
+                user_application: UserApplication = Depends(get_user_application)):
     logger.info(f"Attempting to delete user with user_id: {user_id}")
-    try:
-        email_id = user_application.delete_user(UserId(user_id=user_id), AccessToken(access_token=access_token))
-        return DeleteUserResponse(email=email_id.email)
-    except UserNonLoggedInException as e:
-        logger.error(f"ERROR: User with user_id: {user_id} not logged in.")
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
-    except InvalidTokenException as e:
-        logger.error(f"ERROR: User with user_id: {user_id} does not exists.")
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
-    except UserDoesNotExistsException as e:
-        logger.error(f"ERROR: User with user_id: {user_id} does not exists.")
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
+    user_application.delete_user(user_id=user_id)
