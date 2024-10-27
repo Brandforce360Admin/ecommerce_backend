@@ -20,8 +20,8 @@ def get_session_repository(db_session: Session = Depends(get_db)):
     return SessionRepository(db_session)
 
 
-def get_session_service(db_session: Session = Depends(get_db)):
-    return SessionRepository(db_session)
+def get_session_service(session_repository: SessionRepository = Depends(get_session_repository)):
+    return SessionService(session_repository)
 
 
 def get_token_service(session_service: SessionService = Depends(get_session_service)):

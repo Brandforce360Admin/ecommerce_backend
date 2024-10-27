@@ -1,4 +1,5 @@
 from functools import partial
+from typing import Tuple
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -20,8 +21,7 @@ from app.logger import logger
 
 router = APIRouter()
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-customer_role_dependency = partial(authenticate_and_authorise_user, required_role=UserRole.customer)
+customer_role_dependency = partial(authenticate_and_authorise_user, required_role='customer')
 
 
 @router.post("/register", response_model=RegisterUserResponse)
@@ -52,10 +52,9 @@ def login_user(login_user_request: LoginUserRequest,
         tokens = LoginUserTokenSchema(
             access_token=tokens.access_token.access_token,
             refresh_token=tokens.refresh_token.refresh_token
-
         )
 
-        return LoginUserResponse(user_details=user_details, tokes=tokens)
+        return LoginUserResponse(user_details=user_details, tokens=tokens)
     except UserDoesNotExistsException as e:
         logger.error(f"ERROR: User with email: {login_user.email} does not exists.")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
@@ -66,14 +65,17 @@ def login_user(login_user_request: LoginUserRequest,
 
 
 @router.post("/{user_id}/logout")
-def logout_user(user_id: UserId, session_id: SessionId = Depends(customer_role_dependency),
+def logout_user(authorization_response: Tuple[UserId, SessionId] = Depends(customer_role_dependency),
                 user_application: UserApplication = Depends(get_user_application)):
-    logger.info(f"Attempting to logout user with user_id: {user_id}")
-    user_application.logout_user(user_id=user_id, session_id=session_id)
+    logger.info(f"Attempting to logout user with user_id: {authorization_response[0].user_id}")
+    user_application.logout_user(user_id=authorization_response[0], session_id=authorization_response[1])
 
 
 @router.delete("/{user_id}/delete")
-def delete_user(user_id: UserId = Depends(customer_role_dependency),
+def delete_user(authorization_response: Tuple[UserId, SessionId] = Depends(customer_role_dependency),
                 user_application: UserApplication = Depends(get_user_application)):
-    logger.info(f"Attempting to delete user with user_id: {user_id}")
+    user_id, session_id = authorization_response
+    # logger.info(f"Attempting to delete user with user_id: {authorization_response[0].user_id}")
     user_application.delete_user(user_id=user_id)
+
+
