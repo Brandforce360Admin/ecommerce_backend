@@ -52,7 +52,7 @@ def login_user(login_user_request: LoginUserRequest,
 
         return LoginUserResponse(user_details=user_details, tokens=tokens)
     except UserDoesNotExistsException as e:
-        logger.error(f"ERROR: User with email: {login_user.email} does not exists.")
+        logger.error(f"ERROR: User with email: {login_user_request.email} does not exists.")
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(e))
     except InvalidPasswordException as e:
         logger.error(
@@ -61,16 +61,15 @@ def login_user(login_user_request: LoginUserRequest,
 
 
 #
-# @router.post("/{user_id}/logout")
-# def logout_user(authorization_response: Tuple[UserId, SessionId] = Depends(customer_role_dependency),
-#                 user_application: UserApplication = Depends(get_user_application)):
-#     logger.info(f"Attempting to logout user with user_id: {authorization_response[0].user_id}")
-#     user_application.logout_user(user_id=authorization_response[0], session_id=authorization_response[1])
+@router.post("/{user_id}/logout")
+def logout_user(user_id: UUID, session_id: SessionId = Depends(authenticate_and_authorise),
+                user_application: UserApplication = Depends(get_user_application)):
+    logger.info(f"Attempting to logout user with user_id: {user_id}")
+    user_application.logout_user(user_id=UserId(user_id=user_id), session_id=session_id)
 
 
 @router.delete("/{user_id}/delete")
 def delete_user(user_id: UUID, session_id: SessionId = Depends(authenticate_and_authorise),
                 user_application: UserApplication = Depends(get_user_application)):
-    # logger.info(f"Attempting to delete user with user_id: {authorization_response[0].user_id}")
-    authenticated_session_id = session_id
+    logger.info(f"Attempting to delete user with user_id: {user_id}")
     user_application.delete_user(user_id=UserId(user_id))

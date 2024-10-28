@@ -30,7 +30,7 @@ class TokenService:
         secret_key = settings.JWT_SECRET
         iat_time = datetime.datetime.now(datetime.UTC)
         access_token_expiration = iat_time + datetime.timedelta(minutes=settings.ACCESS_TOKEN_EXPIRY)
-        refresh_token_expiration = iat_time + datetime.timedelta(minutes=settings.REFRESH_TOKEN_EXPIRY)
+        refresh_token_expiration = iat_time + datetime.timedelta(days=settings.REFRESH_TOKEN_EXPIRY)
         session_id = uuid.uuid4()
         access_token_payload = {
             'user_id': user.user_id,

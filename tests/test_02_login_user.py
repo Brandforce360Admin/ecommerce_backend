@@ -18,4 +18,5 @@ class TestLoginUser:
         assert login_response.json()["user_details"]["name"] == register_user["register_user"]["name"]
         assert login_response.json()["user_details"]["email"] == login_user["login_user"]["email"]
         assert is_valid_uuid(login_response.json()["user_details"]["user_id"])
-        assert login_response.json()["access_token"] is not None
+        assert login_response.json()["tokens"]["access_token"] is not None
+        assert login_response.json()["tokens"]["refresh_token"] is not None

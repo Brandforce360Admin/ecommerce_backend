@@ -14,8 +14,7 @@ class TestLogoutUser:
         register_response, login_response = register_login_teardown_delete
         assert register_response.status_code == 200
         assert login_response.status_code == 200
-        headers = {"Authorization": f"Bearer {login_response.json()['access_token']}"}
+        headers = {"Authorization": f"Bearer {login_response.json()["tokens"]['access_token']}"}
         logout_response = client.post(f"{USER_BASE_URL}/{login_response.json()["user_details"]["user_id"]}/logout",
                                       headers=headers)
         assert logout_response.status_code == 200
-        assert logout_response.json()["email"] == login_user["login_user"]["email"]
