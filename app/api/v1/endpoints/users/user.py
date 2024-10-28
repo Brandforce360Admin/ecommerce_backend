@@ -7,7 +7,7 @@ from app.api.v1.schemas.users.login_user import LoginUserResponse, LoginUserRequ
 from app.api.v1.schemas.users.register_user import RegisterUserRequest, RegisterUserResponse
 from app.application.user_application import UserApplication
 from app.dependencies import get_user_application
-from app.domain.authenticate_authorise import authenticate_and_authorise
+from app.domain.security.authenticate_authorise import AuthenticationAndAuthorisation
 from app.domain.excptions.user_exceptions import UserAlreadyExistsException, UserDoesNotExistsException, \
     InvalidPasswordException
 from app.domain.models.users import User
@@ -62,14 +62,14 @@ def login_user(login_user_request: LoginUserRequest,
 
 #
 @router.post("/{user_id}/logout")
-def logout_user(user_id: UUID, session_id: SessionId = Depends(authenticate_and_authorise),
+def logout_user(user_id: UUID, session_id: SessionId = Depends(AuthenticationAndAuthorisation('customer')),
                 user_application: UserApplication = Depends(get_user_application)):
     logger.info(f"Attempting to logout user with user_id: {user_id}")
     user_application.logout_user(user_id=UserId(user_id=user_id), session_id=session_id)
 
-
 @router.delete("/{user_id}/delete")
-def delete_user(user_id: UUID, session_id: SessionId = Depends(authenticate_and_authorise),
+def delete_user(user_id: UUID, session_id: SessionId = Depends(AuthenticationAndAuthorisation('customer')),
                 user_application: UserApplication = Depends(get_user_application)):
+    get_session = session_id
     logger.info(f"Attempting to delete user with user_id: {user_id}")
     user_application.delete_user(user_id=UserId(user_id))

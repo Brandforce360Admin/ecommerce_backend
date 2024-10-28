@@ -28,6 +28,6 @@ class SessionRepository:
     def get_session(self, user_id: UserId):
         return self.db_session.query(Session).filter_by(_user_id=user_id.user_id).first()
 
-    def get_session_by_ids(self, user_id: UserId, session_id: SessionId):
+    def get_session_by_ids(self, user_id: UserId, session_id: SessionId) -> object:
         return self.db_session.query(Session).filter_by(_user_id=user_id.user_id,
                                                         _session_id=session_id.session_id).first()
