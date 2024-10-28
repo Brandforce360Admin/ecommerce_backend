@@ -15,7 +15,7 @@ def register_teardown_login_delete(client, request):
     register_response = client.post(f"{USER_BASE_URL}/register", json=register_request)
     yield register_response
     login_response = client.post(f"{USER_BASE_URL}/login", json=login_request)
-    headers = {"Authorization": f"Bearer {login_response.json()['access_token']}"}
+    headers = {"Authorization": f"Bearer {login_response.json()["tokens"]['access_token']}"}
     client.delete(f"{USER_BASE_URL}/{login_response.json()["user_details"]["user_id"]}/delete", headers=headers)
 
 

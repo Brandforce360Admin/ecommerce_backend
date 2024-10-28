@@ -1,18 +1,16 @@
-from functools import partial
-from typing import Tuple
+from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
 
 from app.api.v1.schemas.users.login_user import LoginUserResponse, LoginUserRequest, LoginUserDetailsSchema, \
     LoginUserTokenSchema
 from app.api.v1.schemas.users.register_user import RegisterUserRequest, RegisterUserResponse
 from app.application.user_application import UserApplication
 from app.dependencies import get_user_application
-from app.domain.authenticate_authorise import authenticate_and_authorise_user
+from app.domain.authenticate_authorise import authenticate_and_authorise
 from app.domain.excptions.user_exceptions import UserAlreadyExistsException, UserDoesNotExistsException, \
     InvalidPasswordException
-from app.domain.models.users import User, UserRole
+from app.domain.models.users import User
 from app.domain.value_objects.email import Email
 from app.domain.value_objects.password import Password
 from app.domain.value_objects.session_id import SessionId
@@ -20,8 +18,6 @@ from app.domain.value_objects.user_id import UserId
 from app.logger import logger
 
 router = APIRouter()
-
-customer_role_dependency = partial(authenticate_and_authorise_user, required_role='customer')
 
 
 @router.post("/register", response_model=RegisterUserResponse)
@@ -64,18 +60,17 @@ def login_user(login_user_request: LoginUserRequest,
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-@router.post("/{user_id}/logout")
-def logout_user(authorization_response: Tuple[UserId, SessionId] = Depends(customer_role_dependency),
-                user_application: UserApplication = Depends(get_user_application)):
-    logger.info(f"Attempting to logout user with user_id: {authorization_response[0].user_id}")
-    user_application.logout_user(user_id=authorization_response[0], session_id=authorization_response[1])
+#
+# @router.post("/{user_id}/logout")
+# def logout_user(authorization_response: Tuple[UserId, SessionId] = Depends(customer_role_dependency),
+#                 user_application: UserApplication = Depends(get_user_application)):
+#     logger.info(f"Attempting to logout user with user_id: {authorization_response[0].user_id}")
+#     user_application.logout_user(user_id=authorization_response[0], session_id=authorization_response[1])
 
 
 @router.delete("/{user_id}/delete")
-def delete_user(authorization_response: Tuple[UserId, SessionId] = Depends(customer_role_dependency),
+def delete_user(user_id: UUID, session_id: SessionId = Depends(authenticate_and_authorise),
                 user_application: UserApplication = Depends(get_user_application)):
-    user_id, session_id = authorization_response
     # logger.info(f"Attempting to delete user with user_id: {authorization_response[0].user_id}")
-    user_application.delete_user(user_id=user_id)
-
-
+    authenticated_session_id = session_id
+    user_application.delete_user(user_id=UserId(user_id))

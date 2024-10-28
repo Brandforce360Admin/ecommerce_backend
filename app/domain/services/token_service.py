@@ -8,6 +8,7 @@ from app.core.config import settings
 from app.domain.models.users import User
 from app.domain.services.session_service import SessionService
 from app.domain.value_objects.expiry import Expiry
+from app.domain.value_objects.session_id import SessionId
 from app.domain.value_objects.tokens import Tokens, AccessToken, RefreshToken
 
 
@@ -52,11 +53,11 @@ class TokenService:
         refresh_token = jwt.encode(refresh_token_payload, secret_key, algorithm=settings.ALGORITHM)
         refresh_token = RefreshToken(refresh_token=refresh_token)
         if is_refresh:
-            self.session_service.update_session_for_user(user=user,
+            self.session_service.update_session_for_user(session_id=SessionId(session_id), user=user,
                                                          refresh_token=refresh_token,
                                                          expiry=Expiry(refresh_token_expiration))
         else:
-            self.session_service.create_session_for_user(user=user,
+            self.session_service.create_session_for_user(session_id=SessionId(session_id), user=user,
                                                          refresh_token=refresh_token,
                                                          expiry=Expiry(refresh_token_expiration))
 

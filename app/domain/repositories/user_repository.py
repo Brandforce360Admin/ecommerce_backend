@@ -20,4 +20,5 @@ class UserRepository:
         return user
 
     def delete_user_by_id(self, user_id: UserId):
-        self.db_session.query(User).filter_by(_user_id=user_id).delete()
+        self.db_session.query(User).filter_by(_user_id=user_id.user_id).delete()
+        self.db_session.commit()

@@ -1,5 +1,3 @@
-import uuid
-
 from app.domain.models.session import Session
 from app.domain.models.users import User
 from app.domain.repositories.session_repository import SessionRepository
@@ -13,12 +11,12 @@ class SessionService:
     def __init__(self, session_repository: SessionRepository):
         self.session_repository = session_repository
 
-    def create_session_for_user(self, user: User, refresh_token: RefreshToken, expiry: Expiry):
+    def create_session_for_user(self, session_id: SessionId, user: User, refresh_token: RefreshToken, expiry: Expiry):
         self.session_repository.create_session(
-            Session(session_id=uuid.uuid4(), user_id=user.user_id, refresh_token=refresh_token.refresh_token,
+            Session(session_id=session_id.session_id, user_id=user.user_id, refresh_token=refresh_token.refresh_token,
                     expires_at=expiry.expiry))
 
-    def update_session_for_user(self, user: User, refresh_token: RefreshToken, expiry: Expiry):
+    def update_session_for_user(self, session_id: SessionId, user: User, refresh_token: RefreshToken, expiry: Expiry):
         pass
 
     def get_user_session_by_id(self, user: User, session_id: SessionId):
