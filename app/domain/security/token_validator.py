@@ -7,18 +7,16 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import InvalidTokenError
 
 from app.core.config import settings
-from app.domain.excptions.authentication_exceptions import TokenExpiredException, InvalidTokenException, \
-    UserAccessException
+from app.domain.excptions.authentication_exceptions import TokenExpiredException, InvalidTokenException
+from app.domain.security.decoded_token_details import DecodedTokenDetails
 from app.domain.value_objects.session_id import SessionId
+from app.domain.value_objects.user_id import UserId
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 class TokenValidator:
-    def __init__(self, required_role: str=None):
-        self.required_role = required_role
-
-    def __call__(self, user_id: UUID, access_token: str = Depends(oauth2_scheme)):
+    def __call__(self, access_token: str = Depends(oauth2_scheme)) -> DecodedTokenDetails:
         secret_key = settings.JWT_SECRET
         try:
             payload = jwt.decode(access_token, secret_key, algorithms=[settings.ALGORITHM])
@@ -32,16 +30,14 @@ class TokenValidator:
             decoded_user_id: str = payload.get("user_id")
             if decoded_user_id is None:
                 raise InvalidTokenException("Access token does not contain user_id")
-            if UUID(decoded_user_id) != user_id:
-                raise InvalidTokenException("Access token is invalid")
-            role: str = payload.get("role")
-            if role is None:
+            decoded_role: str = payload.get("role")
+            if decoded_role is None:
                 raise InvalidTokenException("Access token does not contain role")
-            if role != self.required_role:
-                raise UserAccessException("User is not authorised to access the resource")
-            session_id: str = payload.get("session_id")
-            if session_id is None:
+            decoded_session_id: str = payload.get("session_id")
+            if decoded_session_id is None:
                 raise InvalidTokenException("Access token does not contain session_id")
-            return SessionId(session_id=UUID(session_id))
+            return DecodedTokenDetails(user_id=UserId(UUID(decoded_user_id)),
+                                       session_id=SessionId(UUID(decoded_session_id)),
+                                       role=decoded_role)
         except InvalidTokenError:
             raise InvalidTokenException("Error decoding access_token")
