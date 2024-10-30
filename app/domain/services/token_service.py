@@ -5,11 +5,12 @@ from uuid import UUID
 import jwt
 
 from app.core.config import settings
-from app.domain.models.users import User
+from app.domain.models.users import User, UserRole
 from app.domain.services.session_service import SessionService
 from app.domain.value_objects.expiry import Expiry
 from app.domain.value_objects.session_id import SessionId
 from app.domain.value_objects.tokens import Tokens, AccessToken, RefreshToken
+from app.domain.value_objects.user_id import UserId
 
 
 class TokenService:
@@ -62,3 +63,7 @@ class TokenService:
                                                          expiry=Expiry(refresh_token_expiration))
 
         return Tokens(access_token=AccessToken(access_token), refresh_token=refresh_token)
+
+    def validate_refresh_token(self, refresh_token: RefreshToken, user_id: UserId, session_id: SessionId,
+                               user_role: UserRole):
+        pass

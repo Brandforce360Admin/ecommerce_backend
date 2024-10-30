@@ -4,7 +4,7 @@ from app.domain.models.users import User
 from app.domain.value_objects.email import Email
 from app.domain.value_objects.password import Password
 from app.domain.value_objects.session_id import SessionId
-from app.domain.value_objects.tokens import Tokens, AccessToken
+from app.domain.value_objects.tokens import Tokens, RefreshToken
 from app.domain.value_objects.user_id import UserId
 
 
@@ -32,12 +32,5 @@ class UserApplication:
         self.session_service.delete_all_sessions_for_user(user_id)
         self.user_service.delete_user_by_id(user_id=user_id)
 
-    def refresh_token(self, user_id: UserId, access_token: AccessToken):
-        authenticated_user = self.user_service.authenticate_user(user_id, access_token)
-        return self.token_service.generate_token_and_process_session(user=authenticated_user)
-
-    def refresh_session(self):
+    def refresh_token(self, user_id: UserId, session_id: SessionId, refresh_token: RefreshToken):
         pass
-    #
-    # def authenticate_user(self, user_id: UserId, access_token: AccessToken):
-    #     return self.user_service.authenticate_user(user_id, access_token)
