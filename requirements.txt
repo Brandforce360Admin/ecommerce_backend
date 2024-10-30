@@ -17,3 +17,5 @@ pytest
 allure-pytest
 pytest
 httpx
+google-auth
+requests

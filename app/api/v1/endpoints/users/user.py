@@ -60,7 +60,6 @@ def login_user(login_user_request: LoginUserRequest,
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
-#
 @router.post("/{user_id}/logout")
 def logout_user(user_id: UUID, session_id: SessionId = Depends(AuthenticationAndAuthorisation(UserRole.customer)),
                 user_application: UserApplication = Depends(get_user_application)):
@@ -70,6 +69,5 @@ def logout_user(user_id: UUID, session_id: SessionId = Depends(AuthenticationAnd
 @router.delete("/{user_id}/delete")
 def delete_user(user_id: UUID, session_id: SessionId = Depends(AuthenticationAndAuthorisation(UserRole.customer)),
                 user_application: UserApplication = Depends(get_user_application)):
-    get_session = session_id
     logger.info(f"Attempting to delete user with user_id: {user_id}")
     user_application.delete_user(user_id=UserId(user_id))

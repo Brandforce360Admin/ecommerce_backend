@@ -2,8 +2,7 @@ import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.api.v1.endpoints.sessions import session
-from app.api.v1.endpoints.users import user
+from app.api.v1.endpoints.users import user, google_user
 from app.core.config import settings
 from app.db.base import Base, engine
 from app.domain.excptions.authentication_exceptions import InvalidTokenException, TokenExpiredException, \
@@ -48,7 +47,7 @@ def user_not_logged_exception_handler(request: Request, exc: UserNonLoggedInExce
 Base.metadata.create_all(bind=engine)
 
 app.include_router(user.router, prefix=f"{settings.BASE_URL}/v1/users", tags=["Users"])
-app.include_router(session.router, prefix=f"{settings.BASE_URL}/v1/users", tags=["Session"])
+app.include_router(google_user.router, prefix=f"{settings.BASE_URL}/v1/users/google", tags=["GoogleUsers"])
 
 
 @app.get("/")

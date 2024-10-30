@@ -17,6 +17,7 @@ class Settings(BaseSettings):
     USER_SCHEMA: str = os.getenv("USER_SCHEMA")
     LOG_LEVEL: str = os.getenv("LOG_LEVEL")
     JWT_SECRET: str = os.getenv("JWT_SECRET")
+    GOOGLE_CLIENT_ID : str = os.getenv("GOOGLE_CLIENT_ID")
 
     model_config = ConfigDict(env_file=".env")
 

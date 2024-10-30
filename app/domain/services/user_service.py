@@ -30,8 +30,9 @@ class UserService:
             raise UserDoesNotExistsException(f"User with {email.email} does not exists.")
         return user
 
-    def create_new_user(self, user: User, password: Password) -> User:
-        user.password_hash = PasswordHasher().hash(password.password)
+    def create_new_user(self, user: User, password: Password = None) -> User:
+        if password is not None:
+            user.password_hash = PasswordHasher().hash(password.password)
         user.created_at = datetime.datetime.now(datetime.UTC)
         new_user = self.user_repository.create_user(user)
         return new_user

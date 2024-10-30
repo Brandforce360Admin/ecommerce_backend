@@ -1,3 +1,16 @@
+class GoogleUserToken:
+    def __init__(self, google_user_token: str):
+        self._google_user_token = google_user_token
+
+    @property
+    def google_user_token(self):
+        return self._google_user_token
+
+    @google_user_token.setter
+    def google_user_token(self, google_user_token):
+        self._google_user_token = google_user_token
+
+
 class AccessToken:
     def __init__(self, access_token: str):
         self._access_token = access_token
