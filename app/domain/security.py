@@ -11,8 +11,8 @@ from app.dependencies import get_session_repository
 from app.domain.excptions.authentication_exceptions import TokenExpiredException, InvalidTokenException, \
     UserNonLoggedInException, UserAccessException
 from app.domain.repositories.session_repository import SessionRepository
-from app.domain.value_objects.session_id import SessionId
-from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.ids.session_id import SessionId
+from app.domain.value_objects.ids.user_id import UserId
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 

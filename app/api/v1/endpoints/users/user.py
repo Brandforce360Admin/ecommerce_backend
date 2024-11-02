@@ -13,8 +13,8 @@ from app.domain.excptions.user_exceptions import UserAlreadyExistsException, Use
 from app.domain.models.users import User, UserRole
 from app.domain.value_objects.email import Email
 from app.domain.value_objects.password import Password
-from app.domain.value_objects.session_id import SessionId
-from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.ids.session_id import SessionId
+from app.domain.value_objects.ids.user_id import UserId
 from app.logger import logger
 
 router = APIRouter()

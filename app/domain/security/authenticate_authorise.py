@@ -9,7 +9,7 @@ from app.domain.models.users import UserRole
 from app.domain.repositories.session_repository import SessionRepository
 from app.domain.security.decoded_token_details import DecodedTokenDetails
 from app.domain.security.token_validator import TokenValidator
-from app.domain.value_objects.session_id import SessionId
+from app.domain.value_objects.ids.session_id import SessionId
 
 
 class AuthenticationAndAuthorisation:

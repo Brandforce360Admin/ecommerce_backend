@@ -9,7 +9,7 @@ from app.domain.models.users import User
 from app.domain.repositories.user_repository import UserRepository
 from app.domain.value_objects.email import Email
 from app.domain.value_objects.password import Password
-from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.ids.user_id import UserId
 from app.logger import logger
 
 

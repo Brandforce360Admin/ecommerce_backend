@@ -3,9 +3,9 @@ from typing import Tuple
 from app.domain.models.users import User
 from app.domain.value_objects.email import Email
 from app.domain.value_objects.password import Password
-from app.domain.value_objects.session_id import SessionId
+from app.domain.value_objects.ids.session_id import SessionId
 from app.domain.value_objects.tokens import Tokens, RefreshToken
-from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.ids.user_id import UserId
 
 
 class UserApplication:

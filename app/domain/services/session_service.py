@@ -2,9 +2,9 @@ from app.domain.models.session import Session
 from app.domain.models.users import User
 from app.domain.repositories.session_repository import SessionRepository
 from app.domain.value_objects.expiry import Expiry
-from app.domain.value_objects.session_id import SessionId
+from app.domain.value_objects.ids.session_id import SessionId
 from app.domain.value_objects.tokens import RefreshToken
-from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.ids.user_id import UserId
 
 
 class SessionService:

@@ -8,9 +8,9 @@ from app.core.config import settings
 from app.domain.models.users import User, UserRole
 from app.domain.services.session_service import SessionService
 from app.domain.value_objects.expiry import Expiry
-from app.domain.value_objects.session_id import SessionId
+from app.domain.value_objects.ids.session_id import SessionId
 from app.domain.value_objects.tokens import Tokens, AccessToken, RefreshToken
-from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.ids.user_id import UserId
 
 
 class TokenService:

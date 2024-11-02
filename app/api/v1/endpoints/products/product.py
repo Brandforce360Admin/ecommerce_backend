@@ -1,10 +1,19 @@
-from fastapi import APIRouter
+from uuid import UUID
+
+from fastapi import APIRouter, Depends
+
+from app.application.user_application import UserApplication
+from app.dependencies import get_user_application
+from app.domain.models.users import UserRole
+from app.domain.security.authenticate_authorise import AuthenticationAndAuthorisation
+from app.domain.value_objects.ids.session_id import SessionId
 
 router = APIRouter()
 
 
-@router.post("/add", response_model=None)
-def add_product():
+@router.delete("/add")
+def add_product(user_id: UUID, session_id: SessionId = Depends(AuthenticationAndAuthorisation(UserRole.admin)),
+                user_application: UserApplication = Depends(get_user_application)):
     pass
 
 

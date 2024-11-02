@@ -1,6 +1,6 @@
 from app.domain.models.users import User
 from app.domain.value_objects.email import Email
-from app.domain.value_objects.user_id import UserId
+from app.domain.value_objects.ids.user_id import UserId
 
 
 class UserRepository:
