@@ -1,7 +1,9 @@
+import datetime
 import enum
 import uuid
 
 from sqlalchemy import Column, String, Enum, UUID, TIMESTAMP
+from sqlalchemy.orm import relationship
 
 from app.db.base import Base
 
@@ -20,8 +22,12 @@ class User(Base):
     _email = Column(String(100), unique=True, nullable=False)
     _password_hash = Column(String(255), nullable=True)
     _role = Column(Enum(UserRole), default=UserRole.customer)
-    _created_at = Column(TIMESTAMP, nullable=False)
-    _updated_at = Column(TIMESTAMP, nullable=True)
+    _created_at = Column(TIMESTAMP, default=datetime.datetime.now(datetime.UTC), nullable=False)
+    _updated_at = Column(TIMESTAMP, default=datetime.datetime.now(datetime.UTC),
+                         onupdate=datetime.datetime.now(datetime.UTC), nullable=True)
+    _orders = relationship("Order", back_populates="_user")
+    _cart = relationship("Cart", uselist=False, back_populates="_user")
+    _addresses = relationship("Address", back_populates="_user")
 
     def __init__(self, name: str, email: str):
         self._name = name
