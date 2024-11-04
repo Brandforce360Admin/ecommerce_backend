@@ -25,9 +25,9 @@ class User(Base):
     _created_at = Column(TIMESTAMP, default=datetime.datetime.now(datetime.UTC), nullable=False)
     _updated_at = Column(TIMESTAMP, default=datetime.datetime.now(datetime.UTC),
                          onupdate=datetime.datetime.now(datetime.UTC), nullable=True)
-    _orders = relationship("Order", back_populates="_user")
-    _cart = relationship("Cart", uselist=False, back_populates="_user")
-    _addresses = relationship("Address", back_populates="_user")
+    # _orders = relationship("Order", back_populates="_user")
+    # _cart = relationship("Cart", uselist=False, back_populates="_user")
+    # _addresses = relationship("Address", back_populates="_user")
 
     def __init__(self, name: str, email: str):
         self._name = name

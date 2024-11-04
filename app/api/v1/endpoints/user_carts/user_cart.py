@@ -1,4 +1,15 @@
-from fastapi import APIRouter
+from uuid import UUID
+
+from fastapi import APIRouter, Depends
+
+from app.application.cart_application import CartApplication
+from app.dependencies import get_cart_application
+from app.domain.models.users import UserRole
+from app.domain.security.authenticate_authorise import AuthenticationAndAuthorisation
+from app.domain.value_objects.ids.product_id import ProductId
+from app.domain.value_objects.ids.session_id import SessionId
+from app.domain.value_objects.ids.user_id import UserId
+from app.domain.value_objects.quantity import Quantity
 
 router = APIRouter()
 

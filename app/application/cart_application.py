@@ -8,9 +8,13 @@ class CartApplication:
         pass
 
     def add_product_to_user_cart(self, user_id: UserId, product_id: ProductId, quantity: Quantity):
+        # Verify if cart exists
+        # Verify if product in cart exists
+        # If product exists update  quantity else update original request
         pass
 
     def get_user_cart(self, user_id: UserId):
+        # Return full cart with product and extras
         pass
 
     def empty_user_cart(self, user_id: UserId):
