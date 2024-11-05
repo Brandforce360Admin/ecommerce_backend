@@ -19,12 +19,12 @@ class OrderStatus(enum.Enum):
 class Order(Base):
     __tablename__ = "orders"
 
-    _order_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    _user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False)
-    _total_amount = Column(Float, nullable=False, default=0.0)
-    _status = Column(Enum(OrderStatus), nullable=False, default=OrderStatus.pending)
-    _created_at = Column(TIMESTAMP, default=datetime.datetime.now(datetime.UTC), nullable=False)
-    _updated_at = Column(TIMESTAMP, default=datetime.datetime.now(datetime.UTC),
+    order_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.user_id"), nullable=False)
+    total_amount = Column(Float, nullable=False, default=0.0)
+    status = Column(Enum(OrderStatus), nullable=False, default=OrderStatus.pending)
+    created_at = Column(TIMESTAMP, default=datetime.datetime.now(datetime.UTC), nullable=False)
+    updated_at = Column(TIMESTAMP, default=datetime.datetime.now(datetime.UTC),
                          onupdate=datetime.datetime.now(datetime.UTC), nullable=True)
-    _users = relationship("User", back_populates="_orders")
-    _order_items = relationship("OrderItem", back_populates="_order")
+    users = relationship("User", back_populates="_orders")
+    order_items = relationship("OrderItem", back_populates="_order")
