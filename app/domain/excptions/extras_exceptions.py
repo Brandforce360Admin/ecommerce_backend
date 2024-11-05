@@ -1,8 +1,8 @@
-class ProductDoesNotExistsException(Exception):
+class ExtraDoesNotExistsException(Exception):
     def __init__(self, message: str):
         self.message = message
 
 
-class ProductNotAvailableException(Exception):
+class ExtraNotAvailableException(Exception):
     def __init__(self, message: str):
         self.message = message

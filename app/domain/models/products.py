@@ -1,7 +1,7 @@
 import datetime
 import uuid
 
-from sqlalchemy import Column, UUID, String, TIMESTAMP, ForeignKey, Float
+from sqlalchemy import Column, UUID, String, TIMESTAMP, ForeignKey, Float, Boolean
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
@@ -17,9 +17,10 @@ class Product(Base):
     description = Column(String, nullable=True)
     price = Column(Float, nullable=False)
     image_url = Column(String, nullable=True)
+    is_available = Column(Boolean, nullable=False, default=True)
     created_at = Column(TIMESTAMP, default=datetime.datetime.now(datetime.UTC), nullable=False)
     updated_at = Column(TIMESTAMP, default=datetime.datetime.now(datetime.UTC),
-                         onupdate=datetime.datetime.now(datetime.UTC), nullable=True)
+                        onupdate=datetime.datetime.now(datetime.UTC), nullable=True)
     category = relationship("Category", back_populates="products")
     extras = relationship("Extra", secondary=product_extras_table, back_populates="products")
 

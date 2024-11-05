@@ -1,5 +1,11 @@
+from typing import Dict
+
+from app.domain.models.cart_items import CartItem
 from app.domain.models.carts import Cart
+from app.domain.models.extras import Extra
+from app.domain.models.products import Product
 from app.domain.models.users import User
+from app.domain.value_objects.quantity import Quantity
 
 
 class CartService:
@@ -13,4 +19,9 @@ class CartService:
         else:
             return self.cart_repository.create_user_cart(user)
 
+    def create_cart_item(self, cart: Cart, product: Product, product_quantity: Quantity,
+                         extras: Dict[Extra, Quantity]) -> CartItem:
+        pass
 
+    def add_cart_item_to_user_cart(self, user_cart: Cart, cart_item: CartItem):
+        pass
