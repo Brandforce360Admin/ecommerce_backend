@@ -18,7 +18,7 @@ class CartApplication:
     def add_product_to_user_cart(self, user: User, product: Product, product_quantity: Quantity,
                                  extras_and_quantity: Dict[Extra, Quantity]) -> Cart:
         product = self.product_service.check_existence_and_return_product(product)
-        extras_and_quantity = self.extras_service.check_existence_and_return_extras_dict(extras_and_quantity)
+        extras_and_quantity = self.extras_service.check_extras_for_product(extras_and_quantity, product)
         user_cart = self.cart_service.check_and_create_user_cart(user)
         cart_item = self.cart_service.create_cart_item(user_cart, product, product_quantity, extras_and_quantity)
         user_cart = self.cart_service.add_cart_item_to_user_cart(user_cart, cart_item)
